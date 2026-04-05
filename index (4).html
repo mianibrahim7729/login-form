@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="description" content="Free AI-powered self-improvement app">
+  <title>Elevate AI - Your Personal Coach</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-primary: #0F172A;
+      --bg-secondary: #1E293B;
+      --bg-tertiary: #334155;
+      --accent-primary: #3B82F6;
+      --accent-secondary: #8B5CF6;
+      --accent-success: #10B981;
+      --accent-warning: #F59E0B;
+      --accent-danger: #EF4444;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --border-color: rgba(148, 163, 184, 0.1);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+      animation: gradientMove 15s ease-in-out infinite;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes gradientMove {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(-5%, -5%) rotate(180deg); }
+    }
+
+    #onboarding-screen {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      justify-content: space-between;
+    }
+
+    .onboarding-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .logo-big {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .app-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      text-align: center;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      letter-spacing: -1px;
+    }
+
+    .app-subtitle {
+      font-size: 1.125rem;
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+    }
+
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .feature-content h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .feature-content p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .onboarding-footer {
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    #setup-screen {
+      display: none;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    .setup-container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .setup-progress {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .progress-dot {
+      flex: 1;
+      height: 4px;
+      background: rgba(148, 163, 184, 0.2);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .progress-dot.active {
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    }
+
+    .setup-step {
+      display: none;
+    }
+
+    .setup-step.active {
+      display: block;
+      animation: fadeInUp 0.4s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-description {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .goal-grid {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .goal-card {
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .goal-card:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--accent-primary);
+    }
+
+    .goal-card.selected {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .goal-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .goal-content {
+      flex: 1;
+    }
+
+    .goal-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .goal-description {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .goal-check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border-color);
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .goal-card.selected .goal-check {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-color: var(--accent-primary);
+    }
+
+    .goal-card.selected .goal-check::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 0.875rem 1rem;
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.875rem 1.5rem;
+      border-radius: 0.75rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Poppins', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border: none;
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      margin-top: 0.75rem;
+    }
+
+    #main-app {
+      display: none;
+      padding-bottom: 80px;
+    }
+
+    .header {
+      padding: 1.5rem 1.25rem;
+      background: rgba(30, 41, 59, 0.5);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+
+    .user-info h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .user-info p {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .settings-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .settings-btn:hover {
+      color: var(--accent-primary);
+      transform: rotate(90deg);
+    }
+
+    .xp-bar-container {
+      background: rgba(148, 163, 184, 0.1);
+      height: 8px;
+      border-radius: 50px;
+      overflow: hidden;
+    }
+
+    .xp-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 50px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .container {
+      padding: 1.25rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    }
+
+    .stat-card:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-color);
+      padding: 0.75rem 0;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      z-index: 100;
+      box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0.5rem;
+      border: none;
+      background: transparent;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .bottom-nav-item:hover {
+      color: var(--accent-primary);
+    }
+
+    .bottom-nav-item.active {
+      color: var(--accent-primary);
+    }
+
+    .bottom-nav-item.active .nav-icon {
+      transform: scale(1.2);
+    }
+
+    .nav-icon {
+      font-size: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-label {
+      font-size: 0.625rem;
+      font-weight: 500;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-text {
+      font-size: 0.9375rem;
+    }
+
+    .friend-code-box {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .friend-code {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      margin: 0.5rem 0;
+      letter-spacing: 2px;
+    }
+
+    .leaderboard-item {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .leaderboard-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--accent-primary);
+      transform: translateX(4px);
+    }
+
+    .leaderboard-rank {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.125rem;
+      flex-shrink: 0;
+    }
+
+    .leaderboard-rank.gold {
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+    }
+
+    .leaderboard-rank.silver {
+      background: linear-gradient(135deg, #C0C0C0, #808080);
+    }
+
+    .leaderboard-rank.bronze {
+      background: linear-gradient(135deg, #CD7F32, #8B4513);
+    }
+
+    .leaderboard-content {
+      flex: 1;
+    }
+
+    .leaderboard-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .leaderboard-stats {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .leaderboard-xp {
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      font-size: 1.125rem;
+      color: var(--accent-primary);
+    }
+
+    .chat-container {
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.3);
+      border-radius: 0.75rem;
+    }
+    
+    .chat-message {
+      margin-bottom: 1rem;
+      animation: messageSlide 0.3s ease-out;
+    }
+    
+    @keyframes messageSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .chat-message.user {
+      text-align: right;
+    }
+    
+    .chat-bubble {
+      display: inline-block;
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      max-width: 85%;
+      word-wrap: break-word;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+    }
+    
+    .chat-message.user .chat-bubble {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      border-bottom-right-radius: 0.25rem;
+      box-shadow: var(--shadow);
+    }
+    
+    .chat-message.assistant .chat-bubble {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-bottom-left-radius: 0.25rem;
+      border: 1px solid var(--border-color);
+    }
+    
+    .chat-message.loading .chat-bubble {
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="onboarding-screen">
+    <div class="onboarding-content">
+      <div class="logo-big">⚡</div>
+      <h1 class="app-title">Elevate AI</h1>
+      <p class="app-subtitle">Your free personal coach for life improvement</p>
+      
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-content">
+            <h3>Build Better Habits</h3>
+            <p>Track daily habits and build streaks that stick</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">🤖</div>
+          <div class="feature-content">
+            <h3>AI-Powered Coaching</h3>
+            <p>Get personalized advice powered by Claude AI</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">💪</div>
+          <div class="feature-content">
+            <h3>Track Your Progress</h3>
+            <p>Log workouts, meals, and watch yourself level up</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">🏆</div>
+          <div class="feature-content">
+            <h3>Compete with Friends</h3>
+            <p>Add friends and climb the leaderboard together</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="onboarding-footer">
+      <button class="btn btn-primary" id="get-started-btn">Get Started - It's Free!</button>
+      <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+        No account required • All data stays on your device
+      </p>
+    </div>
+  </div>
+
+  <div id="setup-screen">
+    <div class="setup-container">
+      <div class="setup-progress">
+        <div class="progress-dot active" id="progress-1"></div>
+        <div class="progress-dot" id="progress-2"></div>
+        <div class="progress-dot" id="progress-3"></div>
+        <div class="progress-dot" id="progress-4"></div>
+      </div>
+
+      <div class="setup-step active" id="step-1">
+        <h2 class="step-title">Welcome! What's your name?</h2>
+        <p class="step-description">Let's personalize your experience</p>
+        
+        <div class="input-group">
+          <label class="input-label">First Name</label>
+          <input type="text" id="setup-name" placeholder="Enter your name">
+        </div>
+        
+        <button class="btn btn-primary" id="step1-next">Continue</button>
+      </div>
+
+      <div class="setup-step" id="step-2">
+        <h2 class="step-title">What are your main goals?</h2>
+        <p class="step-description">Select all that apply</p>
+        
+        <div class="goal-grid" id="goals-grid"></div>
+        
+        <button class="btn btn-primary" id="step2-next">Continue</button>
+        <button class="btn btn-secondary" id="step2-back">Back</button>
+      </div>
+
+      <div class="setup-step" id="step-3">
+        <h2 class="step-title">Set your nutrition targets</h2>
+        <p class="step-description">We'll help you track your progress</p>
+        
+        <div class="input-group">
+          <label class="input-label">Daily Calorie Target</label>
+          <input type="number" id="setup-calories" placeholder="e.g., 2000" step="50">
+        </div>
+        
+        <div class="input-group">
+          <label class="input-label">Daily Protein Target (grams)</label>
+          <input type="number" id="setup-protein" placeholder="e.g., 150" step="5">
+        </div>
+        
+        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+          💡 Don't know your targets? No problem! You can adjust these anytime in settings.
+        </p>
+        
+        <button class="btn btn-primary" id="step3-next">Continue</button>
+        <button class="btn btn-secondary" id="step3-back">Back</button>
+      </div>
+
+      <div class="setup-step" id="step-4">
+        <h2 class="step-title">Almost done! 🎉</h2>
+        <p class="step-description">Customize your experience</p>
+        
+        <div class="input-group">
+          <label class="input-label">Preferred Theme</label>
+          <select id="setup-theme">
+            <option value="dark">Dark Mode (Recommended)</option>
+            <option value="light">Light Mode</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label class="input-label">What time do you want daily reminders? (optional)</label>
+          <select id="setup-reminder">
+            <option value="">No reminders</option>
+            <option value="morning">Morning (8 AM)</option>
+            <option value="afternoon">Afternoon (12 PM)</option>
+            <option value="evening">Evening (6 PM)</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" id="complete-setup-btn">Start My Journey!</button>
+        <button class="btn btn-secondary" id="step4-back">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-app"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
